@@ -3,7 +3,7 @@ OBJ_DIR = obj
 LIST_C = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(LIST_C:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 OPTIONS = gcc -g -Wall
-EXECUTE = detecion
+EXECUTE = deteccion
 EXECUTE_DIR = output
 # Mostrar variables
 # show-vars:
@@ -15,7 +15,7 @@ prepare:
 	mkdir -p $(OBJ_DIR) $(EXECUTE_DIR)
 
 $(EXECUTE_DIR)/$(EXECUTE): $(OBJ)
-	$(OPTIONS) -o $@ $<
+	$(OPTIONS) -o $@ $< -lm
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(OPTIONS) -c -o $@ $<
