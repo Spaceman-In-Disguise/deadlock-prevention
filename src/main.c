@@ -3,11 +3,41 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
+
+int procFinished = 0;
 
 int c_to_i(char c)
 {
     return c - '0';
 }
+
+int getV(int *matrix, int i, int j, int n)
+{
+    return matrix[(i * n) + j];
+}
+void setV(int *matrix, int i, int j, int n, int v)
+{
+    matrix[(i * n) + j] = v;
+}
+
+int isSafe(int procIndex, int* work, int* matrixA, int* matrixS, int resources){
+    for (int i = 0; i < resources; i++)
+    {
+        if(getV(matrixS, procIndex, i, resources) - getV(matrixA, procIndex, i, resources) > work[i]){
+            return false;
+        }
+        
+    }
+    for (int i = 0; i < resources; i++)
+    {
+        work[i] += getV(matrixA, procIndex, i, resources);
+    }
+    procFinished++;
+    return procFinished;    
+}
+
+
 
 int main(int argc, char *argv[])
 {
@@ -57,11 +87,13 @@ int main(int argc, char *argv[])
     int procN = c_to_i(line[0]);
 
     int (*priority) = malloc(sizeof(int[resourcesN]));
+    int (*finish) = malloc(sizeof(int[resourcesN]));
     int (*MatrixS)[resourcesN] = malloc(sizeof(int[procN][resourcesN]));
     int (*MatrixA)[resourcesN] = malloc(sizeof(int[procN][resourcesN]));
     for (int i = 0; i < procN; i++)
     {
         priority[i] = 0;
+        finish[i] = 0;
         for (int j = 0; j < resourcesN; j++)
         {
             MatrixS[i][j] = 0;
@@ -129,12 +161,22 @@ int main(int argc, char *argv[])
         printf("%d ", ArrA[i]);
     }
     printf("]\n");
-
-
     
+    for (int i = 0; i < procN; i++)
+    {
+        finish[i] = isSafe(i, &ArrA[0], &MatrixA[0][0], &MatrixS[0][0], resourcesN);
+    }
+
+    printf("---Finish Proccess ---\n");
+    printf("[ ");
+    for(int i = 0; i < procN; i++){
+        printf("%d ", finish[i]);
+    }
+    printf("]\n");
 
     free(MatrixS);
     free(MatrixA);
+    free(priority);    
     free(ArrT);
     free(ArrA);
     return 0;

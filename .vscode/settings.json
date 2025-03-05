@@ -6,5 +6,8 @@
             "binaryPath": "/mnt/c/Users/usuario/Documents/UCV/SO/deadlock-prevention/output/deteccion",
             "binaryArgs": ["-m", "d", "./entry.txt"],
         }
-    ]
+    ],
+    "files.associations": {
+        "bankers.h": "c"
+    }
 }
