@@ -2,7 +2,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 LIST_C = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(LIST_C:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-OPTIONS = gcc -g -Wall
+OPTIONS = gcc -g -Wall -I include
 EXECUTE = deteccion
 EXECUTE_DIR = output
 # Mostrar variables
@@ -15,10 +15,10 @@ prepare:
 	mkdir -p $(OBJ_DIR) $(EXECUTE_DIR)
 
 $(EXECUTE_DIR)/$(EXECUTE): $(OBJ)
-	$(OPTIONS) -o $@ $< -lm
+	$(OPTIONS) -o $@ $^ -lm
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(OPTIONS) -c -o $@ $<
+	$(OPTIONS) -c $< -o $@
 
 clean:
 	rm -rf $(OBJ_DIR) $(EXECUTE_DIR)

@@ -1,5 +1,6 @@
 {
     "makefile.launchConfigurations": [
+        
 
         {
             "cwd": "/mnt/c/Users/usuario/Documents/UCV/SO/deadlock-prevention/output",
@@ -8,6 +9,7 @@
         }
     ],
     "files.associations": {
-        "bankers.h": "c"
+        "bankers.h": "c",
+        "tools.h": "c"
     }
 }

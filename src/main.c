@@ -5,39 +5,11 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "tools.h"
+#include "admin.h"
 int procFinished = 0;
-
-int c_to_i(char c)
-{
-    return c - '0';
-}
-
-int getV(int *matrix, int i, int j, int n)
-{
-    return matrix[(i * n) + j];
-}
-void setV(int *matrix, int i, int j, int n, int v)
-{
-    matrix[(i * n) + j] = v;
-}
-
-int isSafe(int procIndex, int* work, int* matrixA, int* matrixS, int resources){
-    for (int i = 0; i < resources; i++)
-    {
-        if(getV(matrixS, procIndex, i, resources) - getV(matrixA, procIndex, i, resources) > work[i]){
-            return false;
-        }
-        
-    }
-    for (int i = 0; i < resources; i++)
-    {
-        work[i] += getV(matrixA, procIndex, i, resources);
-    }
-    procFinished++;
-    return procFinished;    
-}
-
-
+bool deadLock = false;
+bool safeAll = false;
 
 int main(int argc, char *argv[])
 {
@@ -125,55 +97,110 @@ int main(int argc, char *argv[])
         }
     }
     fclose(file);
-
-    printf("---MatrixA ---\n");
-    for(int i = 0; i < procN; i++){
-        for(int j = 0; j < resourcesN; j++){
-            printf("%d ", MatrixA[i][j]);
-        }
-        printf("\n");
-    }
-    printf("---MatrixS ---\n");
-    for(int i = 0; i < procN; i++){
-        for(int j = 0; j < resourcesN; j++){
-            printf("%d ", MatrixS[i][j]);
-        }
-        printf("\n");
-    }
-
-    printf("---Priority ---\n");
-    printf("[ ");
-    for(int i = 0; i < procN; i++){
-        printf("%d ", priority[i]);
-    }
-    printf("]\n");
-
-    printf("---Total Resources ---\n");
-    printf("[ ");
-    for(int i = 0; i < resourcesN; i++){
-        printf("%d ", ArrT[i]);
-    }
-    printf("]\n");
-
-    printf("---Available Resources ---\n");
-    printf("[ ");
-    for(int i = 0; i < resourcesN; i++){
-        printf("%d ", ArrA[i]);
-    }
-    printf("]\n");
     
+    int (*terminated) = malloc(sizeof(int[procN]));
     for (int i = 0; i < procN; i++)
     {
-        finish[i] = isSafe(i, &ArrA[0], &MatrixA[0][0], &MatrixS[0][0], resourcesN);
+        terminated[i] = 0;
     }
 
-    printf("---Finish Proccess ---\n");
-    printf("[ ");
-    for(int i = 0; i < procN; i++){
-        printf("%d ", finish[i]);
-    }
-    printf("]\n");
+    int (*locked) = malloc(sizeof(int[procN]));
+    while (safeAll == false)
+    {
+        bool hasChangedState = false;
+        safeAll = true;
+        /*Iterates through all the processes and checks
+        if they are safe*/
+        for (int i = 0; i < procN; i++)
+        {   
+            //Only Evaluate Unfinished Processes
+            if(finish[i] <= 0){
+                int s = isSafe(i, &ArrA[0], &MatrixA[0][0], &MatrixS[0][0], resourcesN, procFinished);
+                //printf("S: %d\n", s);
+                if(s>=1)
+                {
+                    procFinished = s;
+                    hasChangedState = true;
+                }
+                else if (safeAll) {safeAll = false;}
+                finish[i] = s;
+            }
 
+            
+        }
+        if(hasChangedState == false && !safeAll){
+            //DEADLOCKED OCURRED
+            printf("Interbloqueo detectado\n");
+            printf("Procesos involucrados");
+            int procCount = 0;
+            for(int i = 0; i < procN; i++){
+                if(finish[i] == -1){
+                    locked[procCount] = i;
+                    procCount++;
+                    printf(" P%d", i);
+                }
+            }
+            printf("\nRecursos disponibles");
+            for(int i = 0; i < resourcesN; i++){
+                printf(" %d", ArrA[i]);
+            }
+            printf("\n");
+            if(procCount <= 1)
+            {
+                terminated[locked[0]] = 1;
+                procFinished++;
+                finish[locked[0]] = procFinished;
+            }
+            else
+            {
+                int choice;
+                printf("a. Aleatorio\n");
+                printf("p. Aborta el proceso con la prioridad mas baja\n");
+                printf("n.Ingresa el numero de proceso a terminar\n");
+                char option;
+                scanf(" %c", &option);
+                if (option == 'a') {
+                    choice = rand() % procCount;
+                    terminated[locked[choice]] = 1;
+                    procFinished++;
+                    finish[locked[choice]] = procFinished;
+                    refillResources(choice, &MatrixA[0][0], &ArrA[0], resourcesN);
+                } else if (option == 'p') {
+                    int lowestPriority = 11;
+                    int lowestPriorityIndex = 0;
+                    for (int i = 0; i < procCount; i++) {
+                        if (priority[locked[i]] < lowestPriority) {
+                            lowestPriority = priority[locked[i]];
+                            lowestPriorityIndex = locked[i];
+                        }
+                    }
+                    terminated[lowestPriorityIndex] = 1;
+                    procFinished++;
+                    finish[lowestPriorityIndex] = procFinished;
+                    refillResources(lowestPriorityIndex, &MatrixA[0][0], &ArrA[0], resourcesN);
+
+                
+                } else if (isdigit(option)) {
+                    choice = option - '0';
+                    if (choice >= 0 && choice < procN) {
+                        terminated[choice] = 1;
+                        procFinished++;
+                        finish[choice] = procFinished;
+                        refillResources(choice, &MatrixA[0][0], &ArrA[0], resourcesN);
+                    } else {
+                        printf("Numero de proceso invalido.\n");
+                    }
+                } else {
+                    printf("Opción Inválida.\n");
+                }
+            }
+        }
+        
+    }
+    
+    printStatus(&finish[0], procN, &terminated[0], deadLock);
+    
+    free(locked);
     free(MatrixS);
     free(MatrixA);
     free(priority);    
