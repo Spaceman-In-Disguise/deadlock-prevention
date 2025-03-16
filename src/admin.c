@@ -14,7 +14,6 @@ int isSafe(int procIndex, int* work, int* matrixA, int* matrixS, int resources, 
             safe = false;
             break;
         }
-        
     }
     if (safe)
     {

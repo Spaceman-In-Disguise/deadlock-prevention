@@ -76,23 +76,28 @@ int main(int argc, char *argv[])
     for(int procIndex = 0; procIndex < procN; procIndex++){
         fgets(line, sizeof(line), file);
         count = 0, i = 0;
-        while(count <= resourcesN*2+2){ //Takes in account the Available and Neccesary Resources plus the priority of the process and the bars in between all of them
+        while(count <= resourcesN*2+2){ 
+            //Takes in account the Available and Neccesary Resources plus the priority of the process and the bars in between all of them
             if(isdigit(line[i])) { //Checks if the character is a digit
                 if(count <= resourcesN)
                 {
-                    MatrixA[procIndex][count] =  MatrixA[procIndex][count] * 10 + c_to_i(line[i]); //Concatenates numbers if they are more than 1 digit
+                    MatrixA[procIndex][count] =  MatrixA[procIndex][count] * 10 + c_to_i(line[i]);
+                    //Concatenates digits and adds them to the Asignation Matrix
                 }
                 else if(count > resourcesN && count <= resourcesN*2)
                 {
-                    MatrixS[procIndex][count-resourcesN-1] =  MatrixS[procIndex][count-resourcesN-1] * 10 + c_to_i(line[i]); //Concatenates numbers if they are more than 1 digit
+                    MatrixS[procIndex][count-resourcesN-1] =  MatrixS[procIndex][count-resourcesN-1] * 10 + c_to_i(line[i]);
+                    //Concatenates digits and adds them to the Solicitud Matrix
                 }
                 else if(count > resourcesN*2)
                 {
-                    priority[procIndex] =  priority[procIndex] * 10 + c_to_i(line[i]); //Concatenates numbers if they are more than 1 digit
+                    priority[procIndex] =  priority[procIndex] * 10 + c_to_i(line[i]);
+                    //Concatenates digits and adds them to the Priority Vector
                 }                
             }
             
-            else{count++;} //Increments the count to move to the next index of the array if the character is not a digit
+            else{count++;} 
+            //Increments the count to move to the next index of the array if the character is not a digit
             i++;
         }
     }
@@ -146,17 +151,19 @@ int main(int argc, char *argv[])
             }
             printf("\n");
             if(procCount <= 1)
+            //Terminates last standing process
             {
                 terminated[locked[0]] = 1;
                 procFinished++;
                 finish[locked[0]] = procFinished;
             }
             else
+            //Terminates process with lowest priority
             {
-            int lowestPriority = 11;
+            int lowestPriority = -1;
             int lowestPriorityIndex = 0;
             for (int i = 0; i < procCount; i++) {
-                if (priority[locked[i]] < lowestPriority) {
+                if (priority[locked[i]] > lowestPriority) {
                     lowestPriority = priority[locked[i]];
                     lowestPriorityIndex = locked[i];
                 }
