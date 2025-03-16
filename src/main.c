@@ -116,7 +116,6 @@ int main(int argc, char *argv[])
             //Only Evaluate Unfinished Processes
             if(finish[i] <= 0){
                 int s = isSafe(i, &ArrA[0], &MatrixA[0][0], &MatrixS[0][0], resourcesN, procFinished);
-                //printf("S: %d\n", s);
                 if(s>=1)
                 {
                     procFinished = s;
@@ -128,8 +127,9 @@ int main(int argc, char *argv[])
 
             
         }
-        if(hasChangedState == false && !safeAll){
+        if(!hasChangedState && !safeAll){
             //DEADLOCKED OCURRED
+            deadLock = true;
             printf("Interbloqueo detectado\n");
             printf("Procesos involucrados");
             int procCount = 0;

@@ -7,26 +7,26 @@
 
 void printStatus(int* finish, int procN, int* terminated, bool deadLock) {
     if(!deadLock){
-        printf("No se detectó interbloqueo\n");
+        printf("Es un estado seguro\n");
     }
-    printf("Procesos ejecutados:\n");
+    else{
+        printf("Hubo un estado inseguro\n");
+    }
+    printf("Estado de los procesos:\n");
+    for (int i = 0; i < procN; i++) {
+        printf("P%d: %s\n", i, terminated[i] ? "Terminado" : "Finalizado");
+    }
+    printf("Orden de asignación de recursos:\n");
     for (int i = 0; i < procN; ++i) {
         int n = 0;
         for (int j = 0; j < procN; j++)
         {
-            if(finish[n] > finish[j]){ //Takes the earliest executed process
+            if(finish[n] > finish[j]){ 
+                //Takes the earliest executed process
                 n = j;
             }
         }
-        //Prints terminated or finalized if there was deadlock involved or not
-        if (terminated[n] == 1)
-        {
-            printf("P%d Terminado\n", n);
-        }
-        else
-        {
-            printf("P%d Finalizado\n", n);
-        }
+        printf("P%d%s%s", i, terminated[i] ? "" : " Terminado", i == procN - 1 ? "\n" : ", ");
         finish[n] = procN+1; //Set the value beyond the highest possible value
         
     }
