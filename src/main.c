@@ -153,47 +153,20 @@ int main(int argc, char *argv[])
             }
             else
             {
-                int choice;
-                printf("a. Aleatorio\n");
-                printf("p. Aborta el proceso con la prioridad mas baja\n");
-                printf("n.Ingresa el numero de proceso a terminar\n");
-                char option;
-                scanf(" %c", &option);
-                if (option == 'a') {
-                    choice = rand() % procCount;
-                    terminated[locked[choice]] = 1;
-                    procFinished++;
-                    finish[locked[choice]] = procFinished;
-                    refillResources(choice, &MatrixA[0][0], &ArrA[0], resourcesN);
-                } else if (option == 'p') {
-                    int lowestPriority = 11;
-                    int lowestPriorityIndex = 0;
-                    for (int i = 0; i < procCount; i++) {
-                        if (priority[locked[i]] < lowestPriority) {
-                            lowestPriority = priority[locked[i]];
-                            lowestPriorityIndex = locked[i];
-                        }
-                    }
-                    terminated[lowestPriorityIndex] = 1;
-                    procFinished++;
-                    finish[lowestPriorityIndex] = procFinished;
-                    refillResources(lowestPriorityIndex, &MatrixA[0][0], &ArrA[0], resourcesN);
-
-                
-                } else if (isdigit(option)) {
-                    choice = option - '0';
-                    if (choice >= 0 && choice < procN) {
-                        terminated[choice] = 1;
-                        procFinished++;
-                        finish[choice] = procFinished;
-                        refillResources(choice, &MatrixA[0][0], &ArrA[0], resourcesN);
-                    } else {
-                        printf("Numero de proceso invalido.\n");
-                    }
-                } else {
-                    printf("Opción Inválida.\n");
+            int lowestPriority = 11;
+            int lowestPriorityIndex = 0;
+            for (int i = 0; i < procCount; i++) {
+                if (priority[locked[i]] < lowestPriority) {
+                    lowestPriority = priority[locked[i]];
+                    lowestPriorityIndex = locked[i];
                 }
             }
+            terminated[lowestPriorityIndex] = 1;
+            procFinished++;
+            finish[lowestPriorityIndex] = procFinished;
+            refillResources(lowestPriorityIndex, &MatrixA[0][0], &ArrA[0], resourcesN);
+            }
+
         }
         
     }
