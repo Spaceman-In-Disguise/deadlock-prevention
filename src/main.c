@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
         if(!hasChangedState && !safeAll){
             //DEADLOCKED OCURRED
             deadLock = true;
-            printf("Interbloqueo detectado\n");
+            printf("Es un estado inseguro\n");
             printf("Procesos involucrados");
             int procCount = 0;
             for(int i = 0; i < procN; i++){
