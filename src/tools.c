@@ -26,7 +26,7 @@ void printStatus(int* finish, int procN, int* terminated, bool deadLock) {
                 n = j;
             }
         }
-        printf("P%d%s%s", i, terminated[i] ? "" : " Terminado", i == procN - 1 ? "\n" : ", ");
+        printf("P%d%s%s", i, terminated[i] ? " Terminado" : "", i == procN - 1 ? "\n" : ", ");
         finish[n] = procN+1; //Set the value beyond the highest possible value
         
     }
