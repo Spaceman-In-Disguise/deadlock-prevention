@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
     //First line of the file - Total Resources
     fgets(line, sizeof(line), file);
     int resourcesN = c_to_i(line[0]);
-    int (*ArrT) = malloc(sizeof(int[resourcesN]));
     int (*ArrA) = malloc(sizeof(int[resourcesN]));
+    int (*ArrT) = malloc(sizeof(int[resourcesN]));
     for (int i = 0; i < resourcesN; i++)
     {
         ArrT[i] = 0;
@@ -114,8 +114,7 @@ int main(int argc, char *argv[])
     {
         bool hasChangedState = false;
         safeAll = true;
-        /*Iterates through all the processes and checks
-        if they are safe*/
+        //Iterates through all the processes and checks if they are safe
         for (int i = 0; i < procN; i++)
         {   
             //Only Evaluate Unfinished Processes
@@ -128,9 +127,7 @@ int main(int argc, char *argv[])
                 }
                 else if (safeAll) {safeAll = false;}
                 finish[i] = s;
-            }
-
-            
+            }            
         }
         if(!hasChangedState && !safeAll){
             //DEADLOCKED OCURRED
@@ -150,6 +147,20 @@ int main(int argc, char *argv[])
                 printf(" %d", ArrA[i]);
             }
             printf("\n");
+
+            printf("Presiona 'q' para terminar el algoritmo o enter para terminar el proceso de menor prioridad:\n");
+            char userInput = getchar();
+            if (userInput == 'q' || userInput == 'Q') {
+                printf("Terminando Algoritmo.\n");
+                free(locked);
+                free(MatrixS);
+                free(MatrixA);
+                free(priority);    
+                free(ArrT);
+                free(ArrA);
+                return 0;
+            }
+
             if(procCount <= 1)
             //Terminates last standing process
             {
